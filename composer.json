@@ -1,0 +1,24 @@
+{
+    "name": "noel92/object",
+    "description": "A library for object",
+    "type": "library",
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Noel92\\Object\\": "src"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "noel",
+            "email": "noel19921013@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
