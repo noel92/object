@@ -44,7 +44,13 @@ class Obj
      */
     public static function fromArray(array $array)
     {
-        return new static();
+        return array_reduce(
+            array_keys($array),
+            function (Obj $obj, $name) use ($array) {
+                return $obj->set($name, $array[$name]);
+            },
+            new static()
+        );
     }
 
     /**
