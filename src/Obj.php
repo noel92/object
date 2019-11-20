@@ -8,18 +8,29 @@ namespace Noel92\Object;
  */
 class Obj
 {
-    protected const TYPE_INT    = 1;
-    protected const TYPE_FLOAT  = 2;
+    protected const TYPE_INT = 1;
+
+    protected const TYPE_FLOAT = 2;
+
     protected const TYPE_STRING = 3;
-    protected const TYPE_BOOL   = 4;
-    protected const TYPE_ARRAY  = 5;
-    protected const TYPE_OBJ    = 6;
-    protected const TYPE_SEQ    = 7;
-    protected const TYPE_MAP    = 8;
-    protected const TYPE_STR    = 9;
+
+    protected const TYPE_BOOL = 4;
+
+    protected const TYPE_ARRAY = 5;
+
+    protected const TYPE_OBJ = 6;
+
+    protected const TYPE_SEQ = 7;
+
+    protected const TYPE_MAP = 8;
+
+    protected const TYPE_STR = 9;
+
     protected const TYPE_STREAM = 10;
-    protected const TYPE_DATE   = 11;
-    protected const TYPE_JSON   = 12;
+
+    protected const TYPE_DATE = 11;
+
+    protected const TYPE_JSON = 12;
 
     /**
      * @var string[] Fields
@@ -29,7 +40,7 @@ class Obj
     /**
      * From array to obj
      * @param array $array Array
-     * @return Obj
+     * @return static
      */
     public static function fromArray(array $array)
     {
@@ -104,7 +115,7 @@ class Obj
      */
     public function objGet(string $name): Obj
     {
-        return static::fromArray($this->arrayGet($name));
+        return Obj::fromArray($this->arrayGet($name));
     }
 
     /**
@@ -114,7 +125,7 @@ class Obj
      */
     public function seqGet(string $name): Seq
     {
-        return new Seq($this->arrayGet($name));
+        return Seq::fromArray($this->arrayGet($name));
     }
 
     /**
@@ -124,7 +135,7 @@ class Obj
      */
     public function mapGet(string $name): Map
     {
-        return new Map($this->arrayGet($name));
+        return Map::fromArray($this->arrayGet($name));
     }
 
     /**
@@ -178,106 +189,190 @@ class Obj
     {
         switch ($type) {
             case static::TYPE_INT:
-                $value = intval($value);
-                break;
+                return $this->intSet($name, $value);
             case static::TYPE_FLOAT:
-                $value = floatval($value);
-                break;
+                return $this->floatSet($name, $value);
             case static::TYPE_STRING:
-                $value = strval($value);
-                break;
+                return $this->stringSet($name, $value);
             case static::TYPE_BOOL:
-                $value = boolval($value);
-                break;
+                return $this->boolSet($name, $value);
             case static::TYPE_ARRAY:
-                $value = (array)$value;
-                break;
+                return $this->arraySet($name, $value);
             case static::TYPE_OBJ:
-                $value = Obj::fromArray((array)$value);
-                break;
+                return $this->objSet($name, $value);
             case static::TYPE_SEQ:
-                $value = new Seq((array)$value);
-                break;
+                return $this->seqSet($name, $value);
             case static::TYPE_MAP:
-                $value = new Map((array)$value);
-                break;
+                return $this->mapSet($name, $value);
             case static::TYPE_STR:
-                $value = new Str(strval($value));
-                break;
+                return $this->strSet($name, $value);
             case static::TYPE_STREAM:
-                $value = new Stream($value);
-                break;
+                return $this->streamSet($name, $value);
             case static::TYPE_DATE:
-                $value = new Date($value);
-                break;
+                return $this->dateSet($name, $value);
             case static::TYPE_JSON:
-                $value = new JSON($value);
-                break;
+                return $this->jsonSet($name, $value);
             default:
+                $this->fields[$name] = $value;
+
+                return $this;
         }
-        $this->fields[$name] = $value;
+    }
+
+    /**
+     * Set int value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
+    public function intSet(string $name, $value)
+    {
+        $this->fields[$name] = intval($value);
 
         return $this;
     }
 
-    public function intSet(string $name, $value)
-    {
-        return $this->set($name, $value, static::TYPE_INT);
-    }
-
+    /**
+     * Set float value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function floatSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_FLOAT);
+        $this->fields[$name] = floatval($value);
+
+        return $this;
     }
 
+    /**
+     * Set string value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function stringSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_STRING);
+        $this->fields[$name] = strval($value);
+
+        return $this;
     }
 
+    /**
+     * Set bool value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function boolSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_BOOL);
+        $this->fields[$name] = boolval($value);
+
+        return $this;
     }
 
+    /**
+     * Set array value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function arraySet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_ARRAY);
+        $this->fields[$name] = (array)$value;
+
+        return $this;
     }
 
+    /**
+     * Set Obj value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function objSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_OBJ);
+        $this->fields[$name] = Obj::fromArray((array)$value);
+
+        return $this;
     }
 
+    /**
+     * Set Seq value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function seqSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_SEQ);
+        $this->fields[$name] = Seq::fromArray((array)$value);
+
+        return $this;
     }
 
+    /**
+     * Set Map value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function mapSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_MAP);
+        $this->fields[$name] = Map::fromArray((array)$value);
+
+        return $this;
     }
 
+    /**
+     * Set Str value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function strSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_STR);
+        $this->fields[$name] = new Str($value);
+
+        return $this;
     }
 
+    /**
+     * Set Stream value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function streamSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_STREAM);
+        $this->fields[$name] = new Stream($value);
+
+        return $this;
     }
 
+    /**
+     * Set Date value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function dateSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_DATE);
+        $this->fields[$name] = new Date($value);
+
+        return $this;
     }
 
+    /**
+     * Set JSON value
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function jsonSet(string $name, $value)
     {
-        return $this->set($name, $value, static::TYPE_JSON);
+        $this->fields[$name] = new JSON($value);
+
+        return $this;
     }
 
     /**
@@ -286,7 +381,7 @@ class Obj
      */
     public function toMap(): Map
     {
-        return new Map($this->fields);
+        return Map::fromArray($this->fields);
     }
 
     /**
