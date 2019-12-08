@@ -12,7 +12,7 @@ class Map extends Obj
      * Map constructor.
      * @param array $value Map
      */
-    public function __construct(array $value)
+    public function __construct(array $value = [])
     {
         $this->fields = $value;
     }

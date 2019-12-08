@@ -43,7 +43,7 @@ class Obj
      */
     public static function create()
     {
-        return new static();
+        return new static(...func_get_args());
     }
 
     /**
@@ -195,7 +195,7 @@ class Obj
      */
     public function dateGet(string $name): Date
     {
-        return new Date($this->get($name));
+        return new Date($this->stringGet($name));
     }
 
     /**
@@ -205,7 +205,7 @@ class Obj
      */
     public function jsonGet(string $name): JSON
     {
-        return new JSON($this->get($name));
+        return new JSON($this->stringGet($name));
     }
 
     /**

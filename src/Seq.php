@@ -12,7 +12,7 @@ class Seq extends Obj
      * Seq constructor.
      * @param array $value Sequence
      */
-    public function __construct(array $value)
+    public function __construct(array $value = [])
     {
         $this->fields = $value;
     }
