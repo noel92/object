@@ -35,7 +35,16 @@ class Obj
     /**
      * @var string[] Fields
      */
-    private $fields = [];
+    protected $fields = [];
+
+    /**
+     * Create an Obj
+     * @return Obj
+     */
+    public static function create()
+    {
+        return new static();
+    }
 
     /**
      * From array to obj
@@ -121,7 +130,12 @@ class Obj
      */
     public function objGet(string $name): Obj
     {
-        return Obj::fromArray($this->arrayGet($name));
+        $val = $this->get($name);
+        if (!$val instanceof Obj) {
+            $val = Obj::fromArray((array)$val);
+        }
+
+        return $val;
     }
 
     /**
@@ -131,7 +145,12 @@ class Obj
      */
     public function seqGet(string $name): Seq
     {
-        return Seq::fromArray($this->arrayGet($name));
+        $val = $this->get($name);
+        if (!$val instanceof Seq) {
+            $val = Seq::fromArray((array)$val);
+        }
+
+        return $val;
     }
 
     /**
@@ -141,7 +160,12 @@ class Obj
      */
     public function mapGet(string $name): Map
     {
-        return Map::fromArray($this->arrayGet($name));
+        $val = $this->get($name);
+        if (!$val instanceof Map) {
+            $val = Map::fromArray((array)$val);
+        }
+
+        return $val;
     }
 
     /**

@@ -8,10 +8,12 @@ namespace Noel92\Object;
  */
 class Stream extends Obj
 {
-    protected $stream;
-
-    public function __construct($stream)
+    /**
+     * Stream constructor.
+     * @param $value Resource
+     */
+    public function __construct($value)
     {
-        $this->stream = $stream;
+        $this->set('value', $value);
     }
 }

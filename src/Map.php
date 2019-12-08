@@ -8,8 +8,12 @@ namespace Noel92\Object;
  */
 class Map extends Obj
 {
-    public function __construct(array $array)
+    /**
+     * Map constructor.
+     * @param array $value Map
+     */
+    public function __construct(array $value)
     {
-
+        $this->fields = $value;
     }
 }

@@ -8,10 +8,12 @@ namespace Noel92\Object;
  */
 class Seq extends Obj
 {
-    private $seq;
-
-    public function __construct(array $seq)
+    /**
+     * Seq constructor.
+     * @param array $value Sequence
+     */
+    public function __construct(array $value)
     {
-        $this->seq = $seq;
+        $this->fields = $value;
     }
 }

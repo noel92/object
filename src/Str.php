@@ -8,10 +8,12 @@ namespace Noel92\Object;
  */
 class Str extends Obj
 {
-    private $str;
-
-    public function __construct(string $str)
+    /**
+     * Str constructor.
+     * @param string $value String
+     */
+    public function __construct(string $value)
     {
-        $this->str = $str;
+        $this->set('value', $value);
     }
 }

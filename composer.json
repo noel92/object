@@ -10,7 +10,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Noel92\\Object\\": "src"
+            "Noel92\\Object\\": "src",
+            "Noel92\\Object\\Test\\": "test"
         }
     },
     "license": "MIT",
@@ -20,5 +21,8 @@
             "email": "noel19921013@gmail.com"
         }
     ],
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "scripts": {
+        "test": "phpunit test"
+    }
 }
