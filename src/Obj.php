@@ -126,6 +126,34 @@ class Obj
     }
 
     /**
+     * Set value by field
+     * @param string $name Field
+     * @param mixed $value Value
+     * @param int|null $type Type
+     * @return static
+     */
+    public function set(string $name, $value, $type = null)
+    {
+        $value = self::cast($value, $type);
+        (function () use ($name, $value) {
+            $this->$name = $value;
+        })->call($this);
+
+        return $this;
+    }
+
+    /**
+     * Convert to array
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return (function () {
+            return get_object_vars($this);
+        })->call($this);
+    }
+
+    /**
      * Get int field
      * @param string $name
      * @return int
@@ -258,23 +286,6 @@ class Obj
     public function jsonGet(string $name): JSON
     {
         return new JSON($this->stringGet($name));
-    }
-
-    /**
-     * Set value by field
-     * @param string $name Field
-     * @param mixed $value Value
-     * @param int|null $type Type
-     * @return static
-     */
-    public function set(string $name, $value, $type = null)
-    {
-        $value = self::cast($value, $type);
-        (function () use ($name, $value) {
-            $this->$name = $value;
-        })->call($this);
-
-        return $this;
     }
 
     /**
@@ -415,7 +426,7 @@ class Obj
      */
     public function toMap(): Map
     {
-        return Map::fromArray($this->getPropertiesArray());
+        return Map::fromArray($this->toArray());
     }
 
     /**
@@ -424,17 +435,6 @@ class Obj
      */
     public function toJSON(): JSON
     {
-        return JSON::fromArray($this->getPropertiesArray());
-    }
-
-    /**
-     * Get array properties
-     * @return array
-     */
-    protected function getPropertiesArray()
-    {
-        return (function () {
-            return get_object_vars($this);
-        })->call($this);
+        return JSON::fromArray($this->toArray());
     }
 }

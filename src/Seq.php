@@ -21,4 +21,33 @@ class Seq extends Obj
     {
         $this->value = $value;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function set(string $name, $value, $type = null)
+    {
+        $index = is_numeric($name) ? $name : intval($name);
+        $this->value[$index] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function get(string $name, $default = null)
+    {
+        $index = is_numeric($name) ? $name : intval($name);
+
+        return $this->value[$index] ?? $default;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray(): array
+    {
+        return $this->value;
+    }
 }
