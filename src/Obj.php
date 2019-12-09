@@ -33,11 +33,6 @@ class Obj
     protected const TYPE_JSON = 12;
 
     /**
-     * @var string[] Fields
-     */
-    protected $fields = [];
-
-    /**
      * Create an Obj
      * @return Obj
      */
@@ -63,6 +58,61 @@ class Obj
     }
 
     /**
+     * Type conversion
+     * @param mixed $var
+     * @param int $type
+     * @return array|bool|float|int|string|Date|Obj|Seq|Map|Seq|Str|Stream
+     */
+    protected static function cast($var, $type)
+    {
+        switch ($type) {
+            case self::TYPE_INT:
+                $_var = intval($var);
+                break;
+            case self::TYPE_FLOAT:
+                $_var = floatval($var);
+                break;
+            case self::TYPE_STRING:
+                $_var = strval($var);
+                break;
+            case self::TYPE_BOOL:
+                $_var = boolval($var);
+                break;
+            case self::TYPE_ARRAY:
+                $_var = (array)$var;
+                break;
+            case self::TYPE_OBJ:
+                $var = (array)$var;
+                $_var = $var instanceof Obj ? $var : Obj::fromArray($var);
+                break;
+            case self::TYPE_SEQ:
+                $var = (array)$var;
+                $_var = $var instanceof Seq ? $var : Seq::fromArray($var);
+                break;
+            case self::TYPE_MAP:
+                $var = (array)$var;
+                $_var = $var instanceof Map ? $var : Map::fromArray($var);
+                break;
+            case self::TYPE_STR:
+                $_var = $var instanceof Str ? $var : new Str((string)$var);
+                break;
+            case self::TYPE_STREAM:
+                $_var = $var instanceof Stream ? $var : new Stream($var);
+                break;
+            case self::TYPE_DATE:
+                $_var = $var instanceof Date ? $var : new Date((string)$var);
+                break;
+            case self::TYPE_JSON:
+                $_var = $var instanceof JSON ? $var : new JSON((string)$var);
+                break;
+            default:
+                $_var = $var;
+        }
+
+        return $_var;
+    }
+
+    /**
      * Get value by field
      * @param string $name Field
      * @param mixed|null $default Default value
@@ -70,7 +120,9 @@ class Obj
      */
     public function get(string $name, $default = null)
     {
-        return $this->fields[$name] ?? $default;
+        return (function () use ($name, $default) {
+            return $this->$name ?? $default;
+        })->call($this);
     }
 
     /**
@@ -217,36 +269,12 @@ class Obj
      */
     public function set(string $name, $value, $type = null)
     {
-        switch ($type) {
-            case static::TYPE_INT:
-                return $this->intSet($name, $value);
-            case static::TYPE_FLOAT:
-                return $this->floatSet($name, $value);
-            case static::TYPE_STRING:
-                return $this->stringSet($name, $value);
-            case static::TYPE_BOOL:
-                return $this->boolSet($name, $value);
-            case static::TYPE_ARRAY:
-                return $this->arraySet($name, $value);
-            case static::TYPE_OBJ:
-                return $this->objSet($name, $value);
-            case static::TYPE_SEQ:
-                return $this->seqSet($name, $value);
-            case static::TYPE_MAP:
-                return $this->mapSet($name, $value);
-            case static::TYPE_STR:
-                return $this->strSet($name, $value);
-            case static::TYPE_STREAM:
-                return $this->streamSet($name, $value);
-            case static::TYPE_DATE:
-                return $this->dateSet($name, $value);
-            case static::TYPE_JSON:
-                return $this->jsonSet($name, $value);
-            default:
-                $this->fields[$name] = $value;
+        $value = self::cast($value, $type);
+        (function () use ($name, $value) {
+            $this->$name = $value;
+        })->call($this);
 
-                return $this;
-        }
+        return $this;
     }
 
     /**
@@ -257,9 +285,7 @@ class Obj
      */
     public function intSet(string $name, $value)
     {
-        $this->fields[$name] = intval($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_INT);
     }
 
     /**
@@ -270,9 +296,7 @@ class Obj
      */
     public function floatSet(string $name, $value)
     {
-        $this->fields[$name] = floatval($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_FLOAT);
     }
 
     /**
@@ -283,9 +307,7 @@ class Obj
      */
     public function stringSet(string $name, $value)
     {
-        $this->fields[$name] = strval($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_STRING);
     }
 
     /**
@@ -296,9 +318,7 @@ class Obj
      */
     public function boolSet(string $name, $value)
     {
-        $this->fields[$name] = boolval($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_BOOL);
     }
 
     /**
@@ -309,9 +329,7 @@ class Obj
      */
     public function arraySet(string $name, $value)
     {
-        $this->fields[$name] = (array)$value;
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_ARRAY);
     }
 
     /**
@@ -322,9 +340,7 @@ class Obj
      */
     public function objSet(string $name, $value)
     {
-        $this->fields[$name] = Obj::fromArray((array)$value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_OBJ);
     }
 
     /**
@@ -335,9 +351,7 @@ class Obj
      */
     public function seqSet(string $name, $value)
     {
-        $this->fields[$name] = Seq::fromArray((array)$value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_SEQ);
     }
 
     /**
@@ -348,9 +362,7 @@ class Obj
      */
     public function mapSet(string $name, $value)
     {
-        $this->fields[$name] = Map::fromArray((array)$value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_MAP);
     }
 
     /**
@@ -361,9 +373,7 @@ class Obj
      */
     public function strSet(string $name, $value)
     {
-        $this->fields[$name] = new Str($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_STR);
     }
 
     /**
@@ -374,9 +384,7 @@ class Obj
      */
     public function streamSet(string $name, $value)
     {
-        $this->fields[$name] = new Stream($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_STREAM);
     }
 
     /**
@@ -387,9 +395,7 @@ class Obj
      */
     public function dateSet(string $name, $value)
     {
-        $this->fields[$name] = new Date($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_DATE);
     }
 
     /**
@@ -400,9 +406,7 @@ class Obj
      */
     public function jsonSet(string $name, $value)
     {
-        $this->fields[$name] = new JSON($value);
-
-        return $this;
+        return $this->set($name, $value, self::TYPE_JSON);
     }
 
     /**
@@ -411,7 +415,7 @@ class Obj
      */
     public function toMap(): Map
     {
-        return Map::fromArray($this->fields);
+        return Map::fromArray($this->getPropertiesArray());
     }
 
     /**
@@ -420,6 +424,17 @@ class Obj
      */
     public function toJSON(): JSON
     {
-        return JSON::fromArray($this->fields);
+        return JSON::fromArray($this->getPropertiesArray());
+    }
+
+    /**
+     * Get array properties
+     * @return array
+     */
+    protected function getPropertiesArray()
+    {
+        return (function () {
+            return get_object_vars($this);
+        })->call($this);
     }
 }
