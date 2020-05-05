@@ -11,43 +11,89 @@ class Seq extends Obj
     /**
      * @var array
      */
-    protected $value;
+    private $array;
 
     /**
-     * Seq constructor.
-     * @param array $value Sequence
+     * From array
+     * @param array $array
+     * @return static
      */
-    public function __construct(array $value = [])
+    public static function fromArray(array $array = [])
     {
-        $this->value = $value;
+        return new static($array);
     }
 
     /**
-     * @inheritDoc
+     * Seq constructor.
+     * @param array $value
      */
-    public function set(string $name, $value, $type = null)
+    public function __construct(array $value = [])
     {
-        $index = is_numeric($name) ? $name : intval($name);
-        $this->value[$index] = $value;
+        $this->array = array_values($value);
+    }
+
+    /**
+     * Add an element
+     * @param int $index
+     * @param mixed $value
+     * @return self
+     */
+    public function add(int $index, $value)
+    {
+        array_splice($this->array, $index, 0, $value);
 
         return $this;
     }
 
     /**
-     * @inheritDoc
+     * Remove an element
+     * @param int $index
+     * @return mixed
      */
-    public function get(string $name, $default = null)
+    public function remove(int $index)
     {
-        $index = is_numeric($name) ? $name : intval($name);
-
-        return $this->value[$index] ?? $default;
+        return array_splice($this->array, $index, 1)[0] ?? null;
     }
 
     /**
-     * @inheritDoc
+     * Get an element
+     * @param int $index
+     * @param mixed $default_value
+     * @return mixed
      */
-    public function toArray(): array
+    public function get(int $index, $default_value = null)
     {
-        return $this->value;
+        return $this->array[$index] ?? $default_value;
+    }
+
+    /**
+     * Set an element
+     * @param int $index
+     * @param mixed $value
+     * @return self
+     */
+    public function set(int $index, $value)
+    {
+        $this->array[$index] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get sequence size
+     * @return int
+     */
+    public function size()
+    {
+        return count($this->array);
+    }
+
+    /**
+     * To array
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->array;
     }
 }
